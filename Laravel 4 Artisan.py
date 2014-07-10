@@ -10,12 +10,14 @@ class Laravel4ArtisanCommand(sublime_plugin.WindowCommand):
         settings = sublime.load_settings('Laravel 4 Artisan.sublime-settings')
         self.php_path = settings.get('php_path')
         self.artisan_path = settings.get('artisan_path')
+        self.vendor_path = settings.get('vendor_path') ? : ''
 
     def run(self, *args, **kwargs):
         try:
             # The first folder needs to be the Laravel Project
             self.PROJECT_PATH = self.window.folders()[0]
             artisan_path = os.path.join(self.PROJECT_PATH, self.artisan_path)
+            self.PROJECT_PATH = os.path.join(self.PROJECT_PATH, self.vendor_path)
             self.args = [self.php_path, artisan_path]
 
             if os.path.isfile("%s" % artisan_path):
