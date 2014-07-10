@@ -10,23 +10,22 @@ class Laravel4ArtisanCommand(sublime_plugin.WindowCommand):
         settings = sublime.load_settings('Laravel 4 Artisan.sublime-settings')
         self.php_path = settings.get('php_path')
         self.artisan_path = settings.get('artisan_path')
-        self.vendor_path = settings.get('vendor_path') ? : ''
+        self.vendor_path = settings.get('vendor_path')
 
     def run(self, *args, **kwargs):
         try:
             # The first folder needs to be the Laravel Project
             self.PROJECT_PATH = self.window.folders()[0]
-            artisan_path = os.path.join(self.PROJECT_PATH, self.artisan_path)
-            self.PROJECT_PATH = os.path.join(self.PROJECT_PATH, self.vendor_path)
-            self.args = [self.php_path, artisan_path]
+            self.artisan_path = os.path.join(self.PROJECT_PATH, self.artisan_path)
+            self.args = [self.php_path, self.artisan_path, self.vendor_path]
 
-            if os.path.isfile("%s" % artisan_path):
+            if os.path.isfile("%s" % self.artisan_path):
                 self.command = kwargs.get('command', None)
                 self.fill_in_accept = kwargs.get('fill_in', False)
                 self.fill_in_label = kwargs.get('fill_in_lable', 'Enter the resource name')
                 self.fields_accept = kwargs.get('fields', False)
                 self.fields_label = kwargs.get('fields_label', 'Enter the fields')
-                self.args = [self.php_path, artisan_path]
+                self.args = [self.php_path, self.artisan_path]
                 if self.command is None:
                     self.window.show_input_panel('Command name w/o args:', '', self.on_command_custom, None, None)
                 else:
@@ -71,6 +70,6 @@ class Laravel4ArtisanCommand(sublime_plugin.WindowCommand):
             self.window.run_command("exec", {
                 "cmd": self.args,
                 "shell": os.name == 'nt',
-                "working_dir": self.PROJECT_PATH})
+                "working_dir": self.PROJECT_PATH + self.vendor_path})
         except IOError:
             sublime.status_message('IOError - command aborted')
